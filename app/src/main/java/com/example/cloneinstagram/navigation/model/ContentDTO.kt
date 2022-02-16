@@ -1,4 +1,4 @@
-package model
+package com.example.cloneinstagram.navigation.model
 
 data class ContentDTO(var explain:String? = null,
                       var imageUrl:String? = null,

@@ -1,5 +1,6 @@
 package com.example.cloneinstagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_detail.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
-import model.ContentDTO
+import com.example.cloneinstagram.navigation.model.ContentDTO
+import org.w3c.dom.Comment
 
 class DetailViewFragment : Fragment() {
     var firestore : FirebaseFirestore? = null
@@ -37,6 +39,7 @@ class DetailViewFragment : Fragment() {
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener{querySnapshot, firebaseFirestoreExceiption ->
                 contentDTOs.clear()
                 contentUidList.clear()
+                if(querySnapshot == null) return@addSnapshotListener
                 for(snapshot in querySnapshot!!.documents){
                     var item = snapshot.toObject(ContentDTO::class.java)
                     contentDTOs.add(item!!)
@@ -76,7 +79,7 @@ class DetailViewFragment : Fragment() {
 
             // This code is when the button is clicked
             viewholder.detailviewitem_favorite_imageview.setOnClickListener {
-                favoriteEvnet(p1)
+                favoriteEvent(p1)
             }
 
             // This code is when the page is loaded
@@ -88,9 +91,24 @@ class DetailViewFragment : Fragment() {
                 // This is unlike status
                 viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
             }
+
+            // This code is when the profile image is clicked
+            viewholder.detailviewitem_profile_image.setOnClickListener{
+                var fragment = UserFragment()
+                var bundle = Bundle()
+                bundle.putString("destinationUid", contentDTOs[p1].uid)
+                bundle.putString("userId", contentDTOs[p1].userId)
+                fragment.arguments = bundle
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,fragment)?.commit()
+            }
+            viewholder.detailviewitem_comment_imageview.setOnClickListener { v ->
+                var intent = Intent(v.context,CommentActivity::class.java)
+                intent.putExtra("contentUid",contentUidList[p1])
+                startActivity(intent)
+            }
         }
 
-        fun favoriteEvnet(position : Int){
+        fun favoriteEvent(position : Int){
             var tsDoc = firestore?.collection("images")?.document(contentUidList[position])
             firestore?.runTransaction { transaction ->
                 var contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)

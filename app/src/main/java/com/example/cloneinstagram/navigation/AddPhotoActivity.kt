@@ -13,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_add_photo.*
-import model.ContentDTO
+import com.example.cloneinstagram.navigation.model.ContentDTO
 import java.text.SimpleDateFormat
 import java.util.*
 
